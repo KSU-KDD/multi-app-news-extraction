@@ -1,14 +1,19 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import de.l3s.boilerpipe.BoilerpipeProcessingException;
+import de.l3s.boilerpipe.extractors.ArticleExtractor;
 import edu.illinois.dais.ttr.*;
 import net.htmlparser.jericho.*;
 
 public class Main {
 	static boolean DEBUG = true;
+	enum ExtractionMethod{CETR,BOILERPIPE,JERICHO};
+	static ExtractionMethod method = ExtractionMethod.CETR;
 	
 	static String separator = "Comments:";
 	final static String url = "http://www.dslreports.com/comments/2568";
@@ -19,19 +24,42 @@ public class Main {
 		StringBuilder sb = new StringBuilder();
 		if (args.length > 0) {
 			for (int i = 0; i < args.length; i++) {
-				sb.append(getTextFromURL(args[i]));
+				try {
+//					getTextFromURLCETR(url);
+					getTextFromURLJericho(url);
+//					getTextFromURLBoilerPipe(args[i]);
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+//				sb.append(getTextFromURLCETR(args[i]));
 			}
 		}
 		else {
-			sb.append(getTextFromURL(url));
+			try {
+				sb.append(getTextFromURLCETR(url));
+			}
+			catch (MalformedURLException e) {
+				e.toString();
+			}
 		}
 		System.out.print(sb.toString());
 		String s = sb.toString();
 		s = s.replaceAll(separator, "\n====\n====\n");
 		System.out.print(s);
-		int x = 0;
 	}
-	private static String getTextFromURL(String url) {
+	
+	private static String getTextFromURLBoilerPipe(String url) throws MalformedURLException {
+		String result = null;
+		try {
+			result = ArticleExtractor.getInstance().getText(new URL(url));
+		}
+		catch (BoilerpipeProcessingException e) {
+			e.toString();
+		}
+		return result;
+	}
+	private static String getTextFromURLCETR(String url) throws MalformedURLException {
 		String HTML;
 		StringBuilder sb = new StringBuilder();
 		try {
@@ -48,11 +76,26 @@ public class Main {
 			
 			HTML = "";
 		}
+		catch (MalformedURLException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			System.out.println(e.toString());
 		}
 		return sb.toString();
 	}
+	private static String getTextFromURLJericho(String url) throws MalformedURLException {
+		String result = null;
+		try {
+			result = (new TextExtractor(new Source(new URL(url)))).toString();
+		}
+		catch (IOException e) {
+			e.toString();
+		}
+		return result;
+	}
+	
+	
 	private static String getUrlSource(String url) throws IOException {
 		URL page = new URL(url);
 		URLConnection yc = page.openConnection();
