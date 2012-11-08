@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -26,8 +27,8 @@ public class Main {
 			for (int i = 0; i < args.length; i++) {
 				try {
 //					getTextFromURLCETR(url);
-					getTextFromURLJericho(url);
-//					getTextFromURLBoilerPipe(args[i]);
+//					getTextFromURLJericho(url);
+					getTextFromURLBoilerPipe(args[i]);
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -52,7 +53,20 @@ public class Main {
 	private static String getTextFromURLBoilerPipe(String url) throws MalformedURLException {
 		String result = null;
 		try {
+			//proposed -- "" will be HTML Source
+			String s = ArticleExtractor.getInstance().getText("");
+			//current
 			result = ArticleExtractor.getInstance().getText(new URL(url));
+		}
+		catch (BoilerpipeProcessingException e) {
+			e.toString();
+		}
+		return result;
+	}
+	private static String getTextFromHTMLBoilerPipe(String HTML) {
+		String result = null;
+		try {
+			result = ArticleExtractor.getInstance().getText("");
 		}
 		catch (BoilerpipeProcessingException e) {
 			e.toString();
@@ -61,9 +75,22 @@ public class Main {
 	}
 	private static String getTextFromURLCETR(String url) throws MalformedURLException {
 		String HTML;
+		String result = null;
+		try {
+			HTML = getHTMLSourceOfURL(url);
+			result = getTextFromHTMLCETR(HTML);
+		}
+		catch (MalformedURLException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			System.out.println(e.toString());
+		}
+		return result;
+	}
+	private static String getTextFromHTMLCETR(String HTML) {
 		StringBuilder sb = new StringBuilder();
 		try {
-			HTML = getUrlSource(url);
 			if (DEBUG) System.out.println(HTML);
 			HTML = insertNewlines(HTML);
 			if (DEBUG) System.out.println(HTML);
@@ -75,9 +102,6 @@ public class Main {
 			
 			
 			HTML = "";
-		}
-		catch (MalformedURLException e) {
-			throw e;
 		}
 		catch (Exception e) {
 			System.out.println(e.toString());
@@ -94,9 +118,18 @@ public class Main {
 		}
 		return result;
 	}
+	private static String getTextFromHTMLJericho(String HTML) {
+		String result = null;
+		try {
+			result = (new TextExtractor(new Source(new StringReader(HTML)))).toString();
+		}
+		catch (IOException e) {
+			e.toString();
+		}
+		return result;
+	}
 	
-	
-	private static String getUrlSource(String url) throws IOException {
+	private static String getHTMLSourceOfURL(String url) throws IOException {
 		URL page = new URL(url);
 		URLConnection yc = page.openConnection();
 		BufferedReader in = new BufferedReader(new InputStreamReader(
