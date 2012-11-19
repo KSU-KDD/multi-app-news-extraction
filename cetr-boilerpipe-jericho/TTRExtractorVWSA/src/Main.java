@@ -50,7 +50,7 @@ public class Main {
 		System.out.print(s);
 	}
 	
-	private static String getTextFromURLBoilerPipe(String url) throws MalformedURLException {
+	public static String getTextFromURLBoilerPipe(String url) throws MalformedURLException {
 		String result = null;
 		try {
 			//proposed -- "" will be HTML Source
@@ -63,7 +63,7 @@ public class Main {
 		}
 		return result;
 	}
-	private static String getTextFromHTMLBoilerPipe(String HTML) {
+	public static String getTextFromHTMLBoilerPipe(String HTML) {
 		String result = null;
 		try {
 			result = ArticleExtractor.getInstance().getText("");
@@ -73,7 +73,7 @@ public class Main {
 		}
 		return result;
 	}
-	private static String getTextFromURLCETR(String url) throws MalformedURLException {
+	public static String getTextFromURLCETR(String url) throws MalformedURLException {
 		String HTML;
 		String result = null;
 		try {
@@ -88,7 +88,7 @@ public class Main {
 		}
 		return result;
 	}
-	private static String getTextFromHTMLCETR(String HTML) {
+	public static String getTextFromHTMLCETR(String HTML) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			if (DEBUG) System.out.println(HTML);
@@ -108,7 +108,7 @@ public class Main {
 		}
 		return sb.toString();
 	}
-	private static String getTextFromURLJericho(String url) throws MalformedURLException {
+	public static String getTextFromURLJericho(String url) throws MalformedURLException {
 		String result = null;
 		try {
 			result = (new TextExtractor(new Source(new URL(url)))).toString();
@@ -118,7 +118,7 @@ public class Main {
 		}
 		return result;
 	}
-	private static String getTextFromHTMLJericho(String HTML) {
+	public static String getTextFromHTMLJericho(String HTML) {
 		String result = null;
 		try {
 			result = (new TextExtractor(new Source(new StringReader(HTML)))).toString();
@@ -129,9 +129,14 @@ public class Main {
 		return result;
 	}
 	
-	private static String getHTMLSourceOfURL(String url) throws IOException {
-		URL page = new URL(url);
-		URLConnection yc = page.openConnection();
+	public static String getHTMLSourceOfURL(String url) throws IOException{
+		URL input = new URL(url);
+		return getHTMLSourceOfURL(input);
+	}
+	
+	public static String getHTMLSourceOfURL(URL url) throws IOException {
+		
+		URLConnection yc = url.openConnection();
 		BufferedReader in = new BufferedReader(new InputStreamReader(
 				yc.getInputStream(), "UTF-8"));
 		String inputLine;
@@ -142,7 +147,7 @@ public class Main {
 
 		return a.toString();
 	}
-	private static String insertNewlines(String HTML) {
+	public static String insertNewlines(String HTML) {
 		StringBuilder newHTML = new StringBuilder(HTML);
 		int i = 60;
 		
@@ -153,7 +158,8 @@ public class Main {
 		}
 		return newHTML.toString();
 	}
-	private static String stripTags(String HTML) {
+	
+	public static String stripTags(String HTML) {
 		return HTML.replaceAll("<[^>]*>", "");
 	}
 }

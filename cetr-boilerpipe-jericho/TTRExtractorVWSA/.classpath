@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="Weninger/htmlparser.jar"/>
 	<classpathentry kind="lib" path="Weninger/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="Weninger/weka.jar"/>
+	<classpathentry kind="lib" path="/Users/Wei/Downloads/jsoup-1.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
